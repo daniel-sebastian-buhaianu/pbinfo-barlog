@@ -11,15 +11,15 @@ struct camera
 {
 	int i, j;
 };
+camera cd[NMAX*MMAX], c, v;
+int dl[] = {-1, 0, 1, 0};
+int dc[] = {0, 1, 0, -1};
+int br[NMAX][MMAX], inc, sf, nrc, gasit, nrmin;
 bool subsir(char a[], char b[]);
 int main()
 {
-	int crt, n, m, i, j, lin, col, k, inc, sf, nrc, gasit, nrmin;
+	int crt, n, m, i, j, lin, col, k;
 	char a[NMAX][MMAX][LGMAX], cuv[LGMAX];
-	int dl[] = {-1, 0, 1, 0};
-	int dc[] = {0, 1, 0, -1};
-	int b[NMAX][MMAX];
-	camera cd[NMAX*MMAX], c, v;
 	fin >> crt >> n >> m;
 	for (i = 1; i <= n; i++)
 	{
@@ -30,24 +30,16 @@ int main()
 	}
 	fin >> lin >> col >> cuv;
 	fin.close();
-	for (i = 1; i <= n; i++)
-	{
-		for (j = 1; j <= m; j++)
-		{
-			b[i][j] = -1;
-		}
-	}
 	for (j = 0; j <= m+1; j++)
 	{
-		b[0][j] = b[n+1][j] = -2;
+		br[0][j] = br[n+1][j] = -1;
 	}
 	for (i = 0; i <= n+1; i++)
 	{
-		b[i][0] = b[i][m+1] = -2;
+		br[i][0] = br[i][m+1] = -1;
 	}
-	inc = sf = 0;
 	cd[sf].i = lin, cd[sf].j = col;
-	b[lin][col] = 1;
+	br[lin][col] = 1;
 	while (inc <= sf)
 	{
 		c = cd[inc++];
@@ -57,44 +49,36 @@ int main()
 			{
 				v.i = c.i+dl[k];
 				v.j = c.j+dc[k];
-				if (b[v.i][v.j] == -1)
+				if (br[v.i][v.j] == 0)
 				{
-					b[v.i][v.j] = 1+b[c.i][c.j];
+					br[v.i][v.j] = 1+br[c.i][c.j];
 					cd[++sf] = v;
 				}
-			}
-		}
-	}
-	nrc = gasit = 0;
-	for (i = 1; i <= n; i++)
-	{
-		for (j = 1; j <= m; j++)
-		{
-			if (b[i][j] > 0)
-			{
-				nrc++;
-				if (i == 1 || i == n || j == 1 || j == m)
+				else if (br[v.i][v.j] == -1 && !gasit)
 				{
-					if (!gasit)
-					{
-						nrmin = b[i][j];
-						gasit = 1;
-					}
-					else if (b[i][j] < nrmin)
-					{
-						nrmin = b[i][j];
-					}
+					nrmin = br[c.i][c.j];
+					gasit = 1;
 				}
 			}
 		}
 	}
-	if (crt == 1)
-	{
-		fout << nrc;
-	}
-	else
+	if (crt == 2)
 	{
 		fout << nrmin;
+	}
+	else if (crt == 1)
+	{
+		for (i = 1; i <= n; i++)
+		{
+			for (j = 1; j <= m; j++)
+			{
+				if (br[i][j] > 0)
+				{
+					nrc++;
+				}
+			}
+		}
+		fout << nrc;
 	}
 	fout.close();
 	return 0;
@@ -114,4 +98,4 @@ bool subsir(char a[], char b[])
 	}
 	return 1;
 }
-// scor 60
+// scor 100
